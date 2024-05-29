@@ -3,11 +3,15 @@ from fastapi import FastAPI, HTTPException, status
 from pydantic import BaseModel, Field
 from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import dotenv_values
+import os
 
 app = FastAPI()
 
-client = AsyncIOMotorClient(dotenv_values(".env").get("URI"))
-database = client[dotenv_values(".env").get("NAME")]
+# client = AsyncIOMotorClient(dotenv_values(".env").get("URI"))
+# database = client[dotenv_values(".env").get("NAME")]
+
+client = AsyncIOMotorClient(os.environ.get('URI'))
+database = client[os.environ.get('NAME')]
 
 user_profiles = database['user_profiles']
 server_profiles = database['server_profiles']
