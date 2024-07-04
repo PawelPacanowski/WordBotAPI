@@ -417,6 +417,22 @@ async def remove_flagged_words(discord_server_id: int, words: list[str]):
 
     await server_profiles.update_one({"discord_server_id": discord_server_id}, {"$unset": data})
     await user_profiles.update_many({"discord_server_id": discord_server_id}, {"$unset": data})
+
+    # must update server flagged words, when any word is deleted
+    # ---------- hotfix ---------- #
+    profile = await server_profiles.find_one({"discord_server_id": discord_server_id})
+    server_words = converter(profile, exclude_keys=("_id", "discord_server_id"))
+
+    for key in server_words.keys():
+        server_words[key] = 0
+
+    async for user in user_profiles.find({"discord_server_id": discord_server_id}):
+        user = converter(user, exclude_keys=("_id", "discord_user_id", "discord_server_id"))
+        for key in user:
+            server_words[key] += user[key]
+    # ---------- hotfix ---------- #
+
+    await server_profiles.update_one({"discord_server_id": discord_server_id}, {"$set": server_words})
     updated_profile = await server_profiles.find_one({"discord_server_id": discord_server_id})
     return converter(updated_profile)
 
