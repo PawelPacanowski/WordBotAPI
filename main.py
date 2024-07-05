@@ -432,4 +432,13 @@ async def remove_flagged_words(discord_server_id: int, words: list[str]):
     updated_profile = await server_profiles.find_one({"discord_server_id": discord_server_id})
     return converter(updated_profile)
 
+@app.get("/servers/get_all_members/{discord_server_id}", description="Returns all member IDs, associated with this server")
+async def get_all_members(discord_server_id: int):
+    data = []
+
+    async for user in user_profiles.find({"discord_server_id": discord_server_id}):
+        data.append(user["discord_user_id"])
+
+    return data
+
 
