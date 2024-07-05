@@ -437,7 +437,8 @@ async def get_all_members(discord_server_id: int):
     data = []
 
     async for user in user_profiles.find({"discord_server_id": discord_server_id}):
-        data.append(user["discord_user_id"])
+        print(user["discord_user_id"])
+        data.append(str(user["discord_user_id"]))
 
     return data
 
