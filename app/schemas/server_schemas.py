@@ -55,4 +55,4 @@ class ServerUpdateFlagsResult(BaseModel):
 
 
 class ServerGetMembersIds(BaseModel):
-    ids: list[int] = Field()
+    ids: list[str] = Field()
