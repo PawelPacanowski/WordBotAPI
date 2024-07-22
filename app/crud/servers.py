@@ -212,3 +212,19 @@ async def update_flags(server_profiles: AgnosticCollection,
 
     except PyMongoError as e:
         raise DatabaseException(f"Database error: {e}")
+
+
+async def get_members_ids(user_profiles: AgnosticCollection,
+                          dc_server_id: int) -> schema.ServerGetMembersIds:
+    try:
+        data = []
+        async for user in user_profiles.find({"discord_server_id": dc_server_id}):
+            data.append(str(user["discord_user_id"]))
+
+        if len(data) == 0:
+            raise DatabaseException("There are no users registered for this server")
+        else:
+            return schema.ServerGetMembersIds(ids=data)
+
+    except PyMongoError as e:
+        raise DatabaseException(f"Database error: {e}")

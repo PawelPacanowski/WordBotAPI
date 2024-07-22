@@ -120,3 +120,13 @@ async def unflag_words(dc_server_id: int, words: list[str]):
     except OverflowError:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Over 8-byte ints are not allowed")
 
+
+@router.get("/get_members_ids", response_model=model.ServerGetMembersIds)
+async def get_members_ids(dc_server_id: int):
+    try:
+        return server.get_members_ids(database.users, dc_server_id)
+
+    except DatabaseException as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.message)
+    except OverflowError:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Over 8-byte ints are not allowed")

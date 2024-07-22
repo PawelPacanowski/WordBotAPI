@@ -52,3 +52,7 @@ class ServerUpdateTotalWordsResult(BaseModel):
 
 class ServerUpdateFlagsResult(BaseModel):
     success: bool = Field()
+
+
+class ServerGetMembersIds(BaseModel):
+    ids: list[int] = Field()
