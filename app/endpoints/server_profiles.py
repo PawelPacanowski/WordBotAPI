@@ -12,7 +12,7 @@ router = APIRouter()
 @router.get("/check_if_exists", response_model=model.ServerExists)
 async def check_if_exists(dc_server_id: int):
     try:
-        return await server.check_if_exists(database.users, dc_server_id)
+        return await server.check_if_exists(database.servers, dc_server_id)
 
     except DatabaseException as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.message)
@@ -28,7 +28,7 @@ async def get_word_count(dc_server_id: int, word: str):
         raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, detail="Cannot get reserved keys. Use dedicated request instead")
 
     try:
-        return await server.get_word_count(database.users, dc_server_id, word)
+        return await server.get_word_count(database.servers, dc_server_id, word)
 
     except DatabaseException as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.message)
@@ -39,7 +39,7 @@ async def get_word_count(dc_server_id: int, word: str):
 @router.get("/get_profile", response_model=model.ServerProfile)
 async def get_profile(dc_server_id: int):
     try:
-        return await server.get_profile(database.users, dc_server_id)
+        return await server.get_profile(database.servers, dc_server_id)
 
     except DatabaseException as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.message)
@@ -50,7 +50,7 @@ async def get_profile(dc_server_id: int):
 @router.get("/get_total_words", response_model=model.ServerTotalWords)
 async def get_total_words(dc_server_id: int):
     try:
-        return await server.get_total_words(database.users, dc_server_id)
+        return await server.get_total_words(database.servers, dc_server_id)
 
     except DatabaseException as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.message)
@@ -61,7 +61,7 @@ async def get_total_words(dc_server_id: int):
 @router.get("/get_total_flagged_words", response_model=model.ServerTotalFlaggedWords)
 async def get_total_flagged_words(dc_server_id: int):
     try:
-        return await server.get_total_flagged_words(database.users, dc_server_id)
+        return await server.get_total_flagged_words(database.servers, dc_server_id)
 
     except DatabaseException as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.message)
@@ -72,7 +72,7 @@ async def get_total_flagged_words(dc_server_id: int):
 @router.get("/get_flagged_words", response_model=model.ServerFlaggedWords)
 async def get_flagged_words(dc_server_id: int):
     try:
-        return await server.get_flagged_words(database.users, dc_server_id)
+        return await server.get_flagged_words(database.servers, dc_server_id)
 
     except DatabaseException as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.message)

@@ -21,6 +21,7 @@ async def get_word_count(server_profiles: AgnosticCollection, dc_server_id: int,
     try:
         projection = {f"words.{word}": 1, "_id": 0}
         result = await server_profiles.find_one({"discord_server_id": dc_server_id}, projection)
+
         if result:
             if len(result["words"]) == 0:
                 raise DatabaseException("Key not found in the profile")
