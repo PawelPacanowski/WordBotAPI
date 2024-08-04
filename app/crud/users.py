@@ -296,6 +296,34 @@ async def update_flags(user_profiles: AgnosticCollection,
         raise DatabaseException(f"Database error: {e}")
 
 
+async def set_data(user_profiles: AgnosticCollection,
+                   dc_server_id: int,
+                   dc_user_id: int,
+                   total_words: int,
+                   data: dict[str, int]) -> schema.UserSetDataResult:
+    try:
+        flags = await get_flagged_words(user_profiles, dc_server_id, dc_user_id)
+
+        new_data = {}
+        total_count = 0
+        for key, val in data.items():
+            if key in flags.words.keys():
+                total_count = total_count + val
+                new_data.update({f"words.{key}": val})
+
+        new_data.update({"total_flagged_words": total_count})
+        new_data.update({"total_words": total_words})
+
+        query = {"$set": new_data}
+        users_result = user_profiles.update_one({"discord_server_id": dc_server_id, "discord_user_id": dc_user_id},
+                                                update=query)
+        if users_result:
+            return schema.UserSetDataResult(success=True)
+
+    except PyMongoError as e:
+        raise DatabaseException(f"Database error: {e}")
+
+
 async def remove_user(server_profiles: AgnosticCollection,
                       user_profiles: AgnosticCollection,
                       dc_server_id: int,

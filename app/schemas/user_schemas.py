@@ -66,3 +66,7 @@ class UserUpdateFlagsResult(BaseModel):
 
 class UserRemoveResult(BaseModel):
     success: bool = Field()
+
+
+class UserSetDataResult(BaseModel):
+    success: bool = Field()

@@ -130,6 +130,34 @@ async def update_user_total_words(dc_server_id: int, dc_user_id: int, count: int
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Over 8-byte ints are not allowed")
 
 
+@router.put("/set_user_data", response_model=model.UserSetDataResult)
+async def set_user_data(dc_server_id: int, dc_user_id: int, total_words: int, data: dict[str, int]):
+    try:
+        user_data = await user.get_profile(database.users, dc_server_id, dc_user_id)
+
+        total_flagged = 0
+        diff_flags = user_data.words.copy()
+
+        for key, value in data.items():
+            if key in user_data.words.keys():
+                total_flagged += value
+                diff_flags[key] = data[key] - user_data.words[key]
+
+        diff_total_words = total_words - user_data.total_words
+
+        res_user = await user.set_data(database.users, dc_server_id, dc_user_id, total_words, data)
+        res_server_1 = await server.update_total_words_count(database.servers, dc_server_id, diff_total_words)
+        res_server_2 = await server.update_flags(database.servers, dc_server_id, diff_flags)
+
+        if res_user and res_server_1 and res_server_2:
+            return model.UserUpdateFlagsResult(success=True)
+
+    except DatabaseException as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.message)
+    except OverflowError:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Over 8-byte ints are not allowed")
+
+
 @router.delete("/remove_profile", response_model=model.UserRemoveResult)
 async def remove_profile(dc_server_id: int, dc_user_id: int):
     try:
